@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Diama SMP — Minecraft Lifesteal (v2)</title>
+  <meta name="description" content="Diama SMP — Minecraft Lifesteal Server. PvP, custom plugins, events, active community. IP: in1.arialnodes.in:25569" />
+
+  <!-- Fonts & icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* --- Reset & base --- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      color:#e9fff8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      background: linear-gradient(-45deg,#002826,#004c44,#007a63,#00b289);
+      background-size:400% 400%;
+      animation:bgShift 12s ease infinite;
+      line-height:1.45;
+    }
+    @keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    /* wrapper */
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+
+    /* canvas particles full-screen underlay */
+    canvas#xpCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:0.85}
+
+    /* NAV */
+    nav{position:sticky;top:12px;z-index:40;display:flex;justify-content:center;gap:20px;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);padding:12px;border-radius:12px}
+    nav a{font-family:'Press Start 2P',cursive;color:#c8fff4;text-decoration:none;font-size:12px;padding:4px 8px}
+    nav a:hover{color:#eafffb;text-shadow:0 0 8px rgba(0,255,200,0.14)}
+
+    /* header */
+    header{position:relative;text-align:center;margin:22px 0;padding:34px;border-radius:14px;background:linear-gradient(180deg,rgba(0,0,0,0.38),rgba(0,0,0,0.28));border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.35);z-index:10}
+    header h1{font-family:'Press Start 2P',cursive;font-size:32px;color:#dffef2;text-shadow:0 0 16px rgba(0,255,180,0.12);margin-bottom:10px}
+    header p{max-width:900px;margin:0 auto;color:rgba(240,255,250,0.95);font-weight:500}
+
+    .header-actions{margin-top:18px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#00ffd7,#00a7ff);color:#002723;border:none;padding:12px 18px;border-radius:12px;cursor:pointer;font-weight:700;box-shadow:0 10px 28px rgba(0,170,140,0.12);transition:transform .14s,box-shadow .14s
+    }
+    .btn:hover{transform:translateY(-4px)}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e8fffb;box-shadow:none}
+
+    /* IP + stats */
+    .ip-section{margin:22px 0;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(0,0,0,0.45),rgba(0,0,0,0.35));border:1px solid rgba(0,255,136,0.05);display:flex;flex-direction:column;align-items:center;gap:12px;z-index:10}
+    .ip-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .ip-box{background:rgba(0,255,136,0.06);padding:12px 18px;border-radius:10px;border:1px solid rgba(0,255,136,0.08);font-weight:700;color:#dffef6;box-shadow:0 8px 20px rgba(0,255,136,0.04)}
+    .stats-bar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+    .stat{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:10px;font-weight:600;color:#e7fff8;border:1px solid rgba(255,255,255,0.02)}
+
+    /* sections */
+    .section{margin:22px 0;padding:26px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(0,255,136,0.04);box-shadow:0 10px 30px rgba(0,0,0,0.22);z-index:10}
+    .section h2{font-family:'Press Start 2P',cursive;color:#bfffee;margin-bottom:14px;font-size:18px;text-shadow:0 0 10px rgba(0,255,180,0.07)}
+
+    /* features: 6 cards grid */
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+    .feature{
+      background:linear-gradient(180deg,rgba(0,0,0,0.48),rgba(0,0,0,0.32));padding:18px;border-radius:12px;border:1px solid rgba(0,255,136,0.04);box-shadow:0 12px 28px rgba(0,0,0,0.26);transition:transform .18s,box-shadow .18s,filter .18s;backdrop-filter:blur(6px)
+    }
+    .feature:hover{transform:translateY(-8px);box-shadow:0 18px 44px rgba(0,0,0,0.36);filter:brightness(1.03)}
+    .feature .icon{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:linear-gradient(135deg,rgba(0,255,204,0.08),rgba(0,160,255,0.04));border:1px solid rgba(255,255,255,0.02)}
+    .feature .icon i{color:#cafff2;font-size:22px}
+    .feature h3{margin-bottom:8px;color:#e9fff8}
+    .feature p{color:#dffef6;font-size:14px;line-height:1.5}
+
+    /* Team hierarchy (captain top, owners row, staff row) */
+    .team-wrap{display:flex;flex-direction:column;align-items:center;gap:28px}
+    .captain-card{width:360px;border-radius:16px;padding:20px;text-align:center;background:linear-gradient(145deg,#002821,#004d40);border:3px solid rgba(0,255,200,0.9);box-shadow:0 30px 60px rgba(0,255,200,0.05)}
+    .captain-card img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,0.04);margin-bottom:10px}
+    .captain-card h3{font-family:'Press Start 2P',cursive;font-size:16px;margin-bottom:8px;color:#eafffb}
+    .captain-card p{font-weight:700;color:#bfffee}
+
+    .owners{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+    .owner{width:260px;border-radius:12px;padding:14px;background:linear-gradient(180deg,rgba(0,0,0,0.48),rgba(0,0,0,0.32));border:2px solid rgba(255,204,0,0.08);box-shadow:0 10px 26px rgba(255,204,0,0.03);text-align:center}
+    .owner img{width:100px;height:100px;border-radius:50%;object-fit:cover;margin-bottom:8px;border:3px solid rgba(255,255,255,0.04)}
+    .owner h4{font-family:'Press Start 2P',cursive;color:#fff7d8;margin-bottom:6px}
+    .owner p{font-weight:700;color:#ffeeb3}
+
+    .staff-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+    .staff{width:200px;border-radius:12px;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0.46),rgba(0,0,0,0.28));border:1px solid rgba(0,255,136,0.03);box-shadow:0 10px 20px rgba(0,0,0,0.22);text-align:center}
+    .staff img{width:78px;height:78px;border-radius:50%;object-fit:cover;margin-bottom:8px;border:2px solid rgba(255,255,255,0.03)}
+    .staff h5{color:#e6fff7;margin-bottom:6px}
+    .staff p{font-weight:700;color:#cfeee4}
+
+    /* rules */
+    .rules-list{list-style:none;padding-left:0;color:#dffef6}
+    .rules-list li{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.02);font-weight:600}
+
+    /* footer */
+    footer{margin-top:26px;padding:18px;text-align:center;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+    footer small{color:#bfffee;animation:footerPulse 3s infinite ease-in-out}
+    @keyframes footerPulse{0%{opacity:1}50%{opacity:0.85}100%{opacity:1}}
+
+    /* small helpers */
+    .muted{opacity:0.85;font-size:13px}
+    .center{display:flex;justify-content:center;align-items:center}
+
+    /* scroll reveal helper classes */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* responsive tweaks */
+    @media (max-width:900px){.captain-card{width:94%}.owner{width:46%}.staff{width:46%}}
+    @media (max-width:640px){nav{padding:8px}.feature{padding:14px}.owner{width:90%}.staff{width:90%}}
+  </style>
+</head>
+<body>
+
+  <!-- XP particle canvas (rendered behind content) -->
+  <canvas id="xpCanvas" aria-hidden="true"></canvas>
+
+  <div class="wrap" style="position:relative;z-index:10;">
+    <!-- NAV -->
+    <nav aria-label="Main navigation">
+      <a href="#about">ABOUT</a>
+      <a href="#ip">SERVER IP</a>
+      <a href="#team">TEAM</a>
+      <a href="#rules">RULES</a>
+      <a href="#invite">JOIN</a>
+    </nav>
+
+    <!-- HEADER -->
+    <header>
+      <h1>Diama SMP ❤️</h1>
+      <p>
+        Welcome to Diama SMP — a lifesteal-focused Minecraft SMP. Steal hearts in PvP, build bases, join tournaments,
+        and climb the leaderboard. Active staff, custom plugins, and weekly events.
+      </p>
+
+      <div class="header-actions">
+        <button class="btn" onclick="openDiscord()"><i class="fab fa-discord"></i> Open Discord</button>
+        <button class="btn ghost" onclick="copyInvite()"><i class="fas fa-copy"></i> Copy Invite</button>
+      </div>
+    </header>
+
+    <!-- IP + stats -->
+    <section id="ip" class="ip-section reveal">
+      <div class="ip-title" style="font-family:'Press Start 2P',cursive;color:#dfffe9">🎮 SERVER IP</div>
+      <div class="ip-row" style="align-items:center">
+        <div class="ip-box" id="ipBox">in1.arialnodes.in:25569</div>
+        <div class="ip-row" style="margin-left:8px">
+          <button class="btn" onclick="copyIP()"><i class="fas fa-copy"></i> Copy IP</button>
+          <button class="btn ghost" onclick="launchIP()"><i class="fas fa-play"></i> Connect</button>
+        </div>
+      </div>
+
+      <div class="stats-bar" aria-hidden="true">
+        <div class="stat">Players: <strong id="statPlayers">—</strong></div>
+        <div class="stat">Version: <strong>1.20+</strong></div>
+        <div class="stat">Mode: <strong>Lifesteal SMP</strong></div>
+      </div>
+    </section>
+
+    <!-- FEATURES 6 cards -->
+    <section id="about" class="section">
+      <h2>About & Features</h2>
+      <div class="features">
+        <div class="feature reveal">
+          <div class="icon"><i class="fas fa-heart"></i></div>
+          <h3>Lifesteal PvP</h3>
+          <p>Kill other players to steal hearts. Risk, reward and high-stakes PvP — this is survival amplified.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="icon"><i class="fas fa-cogs"></i></div>
+          <h3>Custom Plugins</h3>
+          <p>Server uses tailored plugins to manage lifesteal mechanics, anti-abuse systems, and fair matchmaking.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="icon"><i class="fas fa-users"></i></div>
+          <h3>Active Community</h3>
+          <p>Friendly but competitive players — clans, trading, group raids and a lively Discord for events.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="icon"><i class="fas fa-gift"></i></div>
+          <h3>Events & Rewards</h3>
+          <p>Weekly tournaments and seasonal events with exclusive prizes, ranks and in-game loot.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="icon"><i class="fas fa-server"></i></div>
+          <h3>24/7 Uptime</h3>
+          <p>Reliable hosting with low ping and automated backups — the world stays alive while you play.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="icon"><i class="fas fa-shield-halved"></i></div>
+          <h3>Trusted Staff</h3>
+          <p>Fair and active moderation to keep gameplay balanced and handle disputes quickly and transparently.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM hierarchy -->
+    <section id="team" class="section">
+      <h2>Our Team</h2>
+
+      <div class="team-wrap">
+
+        <!-- Captain -->
+        <div class="captain-card reveal">
+          <img src="https://i.ibb.co/3mFM4zzR/download-1.png" alt="Captain Rafay — profile">
+          <h3>⟆ 𝐂𝐀𝐏𝐓𝐀𝐈𝐍 ⋆ 𝐑𝐀𝐅𝐀𝐘 ⟆</h3>
+          <p class="muted">⚔️ Captain — overall server lead & PvP strategist</p>
+        </div>
+
+        <!-- Owners row -->
+        <div class="owners reveal" aria-hidden="false">
+          <div class="owner" aria-label="Owner Affan">
+            <img src="https://i.ibb.co/cPm95Dt/download-2.png" alt="Owner Affan">
+            <h4>⟆ 𝐆𝐀𝐌𝐄𝐑 ⋆ 𝐀𝐅𝐅𝐀𝐍 ⟆</h4>
+            <p class="muted">👑 Owner — server founder & infrastructure</p>
+          </div>
+
+          <div class="owner" style="border-color:#ff5733;box-shadow:0 10px 26px rgba(255,87,51,0.04)" aria-label="Co-Owner Blaze">
+            <img src="https://i.ibb.co/prP5HCGN/download-4.jpg" alt="Co-Owner Blaze">
+            <h4>Ahmed | Blaze</h4>
+            <p class="muted">🔥 Co-Owner — community & events</p>
+          </div>
+        </div>
+
+        <!-- staff row -->
+        <div class="staff-row reveal">
+          <div class="staff" aria-label="Manager">
+            <img src="https://i.ibb.co/C3vy9rFq/images.jpg" alt="Manager placeholder">
+            <h5>No One</h5>
+            <p class="muted">📋 Manager</p>
+          </div>
+
+          <div class="staff" aria-label="Admin water hashira">
+            <img src="https://i.ibb.co/XxPPznBg/download-3.png" alt="Admin water hashira">
+            <h5>ᴡᴀᴛᴇʀ ʜᴀꜱʜɪʀᴀ</h5>
+            <p class="muted">🛠️ Admin — moderation & support</p>
+          </div>
+
+          <div class="staff" aria-label="Moderator">
+            <img src="https://i.ibb.co/cXC5mxpX/download-6.jpg" alt="Moderator placeholder">
+            <h5>No One</h5>
+            <p class="muted">💬 Moderator</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RULES -->
+    <section id="rules" class="section reveal">
+      <h2>Server Rules</h2>
+      <ul class="rules-list">
+        <li>✅ Respect everyone — abuse or hate speech will not be tolerated.</li>
+        <li>❌ No hacks, exploits or dupes. Evidence-based bans.</li>
+        <li>🏠 No spawn killing or destructive griefing.</li>
+        <li>⚔️ PvP allowed — avoid unfair teaming in solo events.</li>
+        <li>💬 Keep chat safe — no NSFW, doxxing, or targeted harassment.</li>
+        <li>📛 Follow staff instructions. Appeals handled in Discord.</li>
+      </ul>
+    </section>
+
+    <!-- INVITE -->
+    <section id="invite" class="section reveal">
+      <h2>Join Diama SMP</h2>
+      <p style="max-width:840px;margin:0 auto 14px" class="muted">Open our Discord to join the community. Copy the invite if needed.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" onclick="openDiscord()"><i class="fab fa-discord"></i> Open Discord</button>
+        <button class="btn ghost" onclick="copyInvite()"><i class="fas fa-copy"></i> Copy Invite</button>
+      </div>
+    </section>
+
+    <footer>
+      <small>© 2025 Diama SMP | Powered by Rafay | All Rights Reserved</small>
+    </footer>
+  </div>
+
+  <!-- --- SCRIPTS: particles, reveal, interactions, small stats mock --- -->
+  <script>
+  // ====== XP particle engine (small squares) - limited & performant ======
+  (function xpCanvas(){
+    const canvas = document.getElementById('xpCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let w=canvas.width=innerWidth, h=canvas.height=innerHeight;
+    window.addEventListener('resize',()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight});
+
+    // particle pool
+    const MAX = Math.min(80, Math.floor(w/12)); // keep limited
+    const particles = [];
+    function spawn(){
+      if(particles.length>=MAX) return;
+      const size = 6 + Math.random()*8;
+      particles.push({
+        x: Math.random()*w,
+        y: -20 - Math.random()*100,
+        vx: (Math.random()-0.5)*0.6,
+        vy: 0.8 + Math.random()*1.2,
+        life: 3000 + Math.random()*3000,
+        born: performance.now(),
+        size,
+        hue: 160 + Math.random()*60
+      });
+    }
+    // initial batch
+    for(let i=0;i<MAX/3;i++) spawn();
+
+    function step(time){
+      ctx.clearRect(0,0,w,h);
+      // spawn occasionally
+      if(Math.random()<0.35) spawn();
+      for(let i=particles.length-1;i>=0;i--){
+        const p=particles[i];
+        const age = time - p.born;
+        if(age>p.life || p.y>h+50){
+          particles.splice(i,1);
+          continue;
+        }
+        // movement
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx += (Math.random()-0.5)*0.04;
+        // draw square (pixel-like)
+        const alpha = 1 - age/p.life;
+        ctx.fillStyle = `hsla(${p.hue},80%,60%,${alpha})`;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        // small glow
+        ctx.fillStyle = `rgba(255,255,255,${alpha*0.02})`;
+        ctx.fillRect(p.x-1, p.y-1, p.size+2, p.size+2);
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  })();
+
+  // ====== Scroll reveal (simple) ======
+  (function revealOnScroll(){
+    const obsOptions = {threshold:0.12};
+    const io = new IntersectionObserver((entries)=>{
+      for(const e of entries){
+        if(e.isIntersecting) e.target.classList.add('visible');
+      }
+    }, obsOptions);
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  })();
+
+  // ====== Interaction & small functions ======
+  const DISCORD_INVITE = "https://discord.gg/xKUUnA3z6Y";
+  const SERVER_IP = "in1.arialnodes.in:25569";
+
+  function copy(text){
+    if(!navigator.clipboard){
+      const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);
+      ta.select(); try{document.execCommand('copy')}catch(e){} document.body.removeChild(ta); return;
+    }
+    navigator.clipboard.writeText(text).catch(()=>{});
+  }
+
+  function copyInvite(){ copy(DISCORD_INVITE); toast("Discord invite copied"); }
+  function openDiscord(){ window.open(DISCORD_INVITE, "_blank"); }
+  function copyIP(){ copy(SERVER_IP); toast("Server IP copied"); }
+  function launchIP(){
+    copy(SERVER_IP);
+    toast("IP copied — paste in Minecraft Multiplayer → Add Server");
+    // try best-effort open (may not work depending on platform)
+    try{ window.open("minecraft://?addExternalServer=Diama%20SMP%7C"+encodeURIComponent(SERVER_IP)); }catch(e){}
+  }
+
+  // small toast
+  function toast(msg){
+    const el=document.createElement('div');
+    el.textContent=msg; el.style.position='fixed'; el.style.left='50%'; el.style.bottom='28px';
+    el.style.transform='translateX(-50%)'; el.style.background='rgba(0,0,0,0.7)'; el.style.color='#dffef6';
+    el.style.padding='10px 14px'; el.style.borderRadius='10px'; el.style.zIndex=99999; el.style.boxShadow='0 8px 28px rgba(0,0,0,0.5)';
+    document.body.appendChild(el);
+    setTimeout(()=>el.style.opacity='0',1500); setTimeout(()=>el.remove(),1900);
+  }
+
+  // ===== Small mock for server players (you can replace this with real API) =====
+  (function statsMock(){
+    const el=document.getElementById('statPlayers');
+    if(!el) return;
+    // simple animated counter from 0 to a mock value
+    let target = 0;
+    try{ // try to get from URL param? else random demonstration
+      const t = parseInt(new URLSearchParams(location.search).get('players'));
+      if(t>0) target = t;
+    } catch(e){}
+    if(target===0){ target = Math.floor(12 + Math.random()*48); }
+    let cur=0; const step = Math.max(1, Math.floor(target/30));
+    const tick = setInterval(()=>{ cur += step; if(cur>=target){ cur=target; clearInterval(tick); } el.textContent = cur; }, 60);
+  })();
+
+  // Performance note: particles auto-limit based on window size
+  </script>
+</body>
+</html>
